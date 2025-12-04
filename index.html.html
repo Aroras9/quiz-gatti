@@ -1,0 +1,563 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8" />
+  <title>Quiz Adozione Cuccioli</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;700&family=Nunito:wght@400;600;700&display=swap" rel="stylesheet">
+
+  <style>
+    :root {
+      --bg-top: #fbe2c8;
+      --bg-bottom: #c9e9ff;
+      --accent-pink: #ff9fbf;
+      --accent-blue: #7fd6ff;
+      --accent-mint: #98f5c4;
+      --brown: #5b341a;
+      --card-bg: rgba(255, 255, 255, 0.9);
+      --shadow-soft: 0 18px 45px rgba(0, 0, 0, 0.12);
+      --radius-xl: 26px;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      min-height: 100vh;
+      font-family: "Nunito", system-ui, -apple-system, BlinkMacSystemFont;
+      color: var(--brown);
+      background: linear-gradient(to bottom, var(--bg-top), var(--bg-bottom));
+      position: relative;
+      overflow-x: hidden;
+    }
+
+    /* piccole zampette/cuori come nello sfondo */
+    body::before,
+    body::after {
+      content: "";
+      position: fixed;
+      inset: -10vh;
+      background-image:
+        radial-gradient(circle at 10% 15%, rgba(255,159,191,.7) 0, rgba(255,159,191,0) 45%),
+        radial-gradient(circle at 85% 12%, rgba(127,214,255,.7) 0, rgba(127,214,255,0) 46%),
+        radial-gradient(circle at 20% 85%, rgba(152,245,196,.7) 0, rgba(152,245,196,0) 40%),
+        radial-gradient(circle at 80% 82%, rgba(255,159,191,.5) 0, rgba(255,159,191,0) 42%);
+      opacity: 0.35;
+      pointer-events: none;
+      z-index: -2;
+    }
+
+    main {
+      max-width: 960px;
+      margin: 0 auto;
+      padding: 28px 18px 40px;
+      display: flex;
+      flex-direction: column;
+      gap: 22px;
+    }
+
+    header {
+      text-align: center;
+      padding: 10px 0 6px;
+      animation: fadeDown 0.8s ease-out both;
+    }
+
+    h1 {
+      font-family: "Baloo 2", system-ui;
+      font-weight: 700;
+      letter-spacing: 0.03em;
+      font-size: clamp(2.1rem, 4vw, 2.7rem);
+      text-shadow: 0 4px 10px rgba(0,0,0,0.12);
+    }
+
+    .subtitle {
+      margin-top: 4px;
+      font-size: 0.98rem;
+      opacity: 0.9;
+    }
+
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 4px 12px;
+      border-radius: 999px;
+      background: rgba(255,255,255,0.6);
+      box-shadow: 0 10px 22px rgba(0,0,0,0.06);
+      font-size: 0.85rem;
+      margin-top: 10px;
+    }
+
+    .pill-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: var(--accent-pink);
+    }
+
+    .card {
+      background: var(--card-bg);
+      border-radius: var(--radius-xl);
+      box-shadow: var(--shadow-soft);
+      padding: 20px 20px 22px;
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255,255,255,0.8);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .card::before {
+      content: "";
+      position: absolute;
+      inset: -40%;
+      background-image: radial-gradient(circle at 0 0, rgba(255,255,255,0.8) 0, transparent 55%);
+      opacity: 0.42;
+      pointer-events: none;
+      mix-blend-mode: screen;
+    }
+
+    .intro-card {
+      animation: fadeUp 0.85s ease-out 0.1s both;
+    }
+
+    .intro-text p {
+      font-size: 0.98rem;
+      line-height: 1.6;
+    }
+
+    .intro-text p + p {
+      margin-top: 10px;
+    }
+
+    .highlight {
+      font-weight: 700;
+    }
+
+    .quiz-card {
+      animation: fadeUp 0.85s ease-out 0.2s both;
+    }
+
+    .quiz-header {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      margin-bottom: 14px;
+    }
+
+    .quiz-header-title {
+      font-family: "Baloo 2";
+      font-size: 1.25rem;
+    }
+
+    .badge {
+      font-size: 0.8rem;
+      padding: 4px 10px;
+      border-radius: 999px;
+      background: rgba(127,214,255,0.15);
+      border: 1px solid rgba(127,214,255,0.7);
+      color: #24627a;
+    }
+
+    .questions {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      margin-top: 4px;
+    }
+
+    .question {
+      padding: 10px 12px 11px;
+      border-radius: 18px;
+      background: rgba(255,255,255,0.9);
+      border: 1px solid rgba(255,255,255,0.9);
+      position: relative;
+    }
+
+    .question h3 {
+      font-size: 0.95rem;
+      margin-bottom: 8px;
+    }
+
+    .options {
+      display: grid;
+      gap: 6px;
+      margin-bottom: 6px;
+    }
+
+    .option {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 8px;
+      border-radius: 999px;
+      border: 1px solid rgba(150,120,90,0.25);
+      background: rgba(255,255,255,0.8);
+      cursor: pointer;
+      transition: transform 0.13s ease, box-shadow 0.13s ease, border-color 0.13s ease, background 0.13s ease;
+      font-size: 0.88rem;
+    }
+
+    .option input {
+      appearance: none;
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      border: 2px solid rgba(150,120,90,0.65);
+      position: relative;
+      flex-shrink: 0;
+    }
+
+    .option input:checked {
+      border-color: transparent;
+      background: radial-gradient(circle, var(--accent-blue) 0, var(--accent-blue) 55%, transparent 56%);
+    }
+
+    .option:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 6px 14px rgba(0,0,0,0.08);
+      border-color: rgba(127,214,255,0.7);
+      background: rgba(255,255,255,0.95);
+    }
+
+    .option span {
+      flex: 1;
+    }
+
+    .explanation {
+      font-size: 0.8rem;
+      color: #6b4a30;
+      opacity: 0.85;
+      display: none;
+      margin-top: 2px;
+    }
+
+    .question.correct .explanation {
+      display: block;
+    }
+
+    .question.correct {
+      border-color: rgba(152,245,196,0.9);
+      box-shadow: 0 0 0 1px rgba(152,245,196,0.75);
+    }
+
+    .question.incorrect {
+      border-color: rgba(255,159,191,0.9);
+      box-shadow: 0 0 0 1px rgba(255,159,191,0.75);
+    }
+
+    .check-btn {
+      margin-top: 18px;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 9px 18px;
+      border-radius: 999px;
+      border: none;
+      background: linear-gradient(135deg, #ffb48d, #ff9fbf);
+      color: #4a220d;
+      font-weight: 700;
+      font-size: 0.92rem;
+      cursor: pointer;
+      box-shadow: 0 12px 26px rgba(0,0,0,0.18);
+      transform-origin: center;
+      transition: transform 0.12s ease, box-shadow 0.12s ease, filter 0.12s ease;
+    }
+
+    .check-btn:hover {
+      transform: translateY(-1px) scale(1.02);
+      box-shadow: 0 16px 32px rgba(0,0,0,0.22);
+      filter: brightness(1.03);
+    }
+
+    .check-btn:active {
+      transform: translateY(1px) scale(0.98);
+      box-shadow: 0 8px 18px rgba(0,0,0,0.18);
+    }
+
+    .result {
+      margin-top: 14px;
+      font-size: 0.95rem;
+      font-weight: 600;
+    }
+
+    .cta-card {
+      margin-top: 4px;
+      text-align: center;
+      animation: fadeUp 0.85s ease-out 0.3s both;
+    }
+
+    .cta-card p {
+      font-size: 0.96rem;
+      line-height: 1.5;
+      margin-bottom: 10px;
+    }
+
+    .adopt-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 8px 20px;
+      border-radius: 999px;
+      border: 1px solid rgba(91,52,26,0.18);
+      background: rgba(255,255,255,0.95);
+      font-size: 0.9rem;
+      font-weight: 700;
+      cursor: pointer;
+      box-shadow: 0 10px 22px rgba(0,0,0,0.12);
+      transition: transform 0.16s ease, box-shadow 0.16s ease, background 0.16s ease;
+    }
+
+    .adopt-btn:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 14px 30px rgba(0,0,0,0.18);
+      background: #ffe9d4;
+    }
+
+    .adopt-btn:active {
+      transform: translateY(1px) scale(0.98);
+      box-shadow: 0 7px 16px rgba(0,0,0,0.14);
+    }
+
+    footer {
+      text-align: center;
+      font-size: 0.75rem;
+      opacity: 0.7;
+      margin-top: 14px;
+      padding-bottom: 10px;
+    }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(18px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes fadeDown {
+      from { opacity: 0; transform: translateY(-15px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    @media (min-width: 768px) {
+      main {
+        padding: 40px 30px 48px;
+        gap: 26px;
+      }
+
+      .intro-layout {
+        display: grid;
+        grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr);
+        gap: 18px;
+        align-items: center;
+      }
+
+      .intro-quote {
+        padding-left: 12px;
+        border-left: 3px solid rgba(127,214,255,0.9);
+        font-size: 0.9rem;
+        opacity: 0.85;
+      }
+
+      .quiz-card {
+        padding: 22px 22px 24px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <header>
+      <h1>Lo sapevi che adottare a 4 mesi è speciale?</h1>
+      <p class="subtitle">Prima di scegliere uno di questi dolcissimi cuccioli, scopri quanto ne sai davvero.</p>
+      <div class="pill">
+        <span class="pill-dot"></span>
+        
+      </div>
+    </header>
+
+    <!-- INTRO: collegata alle storie precedenti -->
+    <section class="card intro-card" aria-labelledby="intro-title">
+      <div class="intro-layout">
+        <div class="intro-text">
+          <h2 id="intro-title" style="font-family:'Baloo 2';font-size:1.2rem;margin-bottom:6px;">
+            Se hai visto le mie storie precedenti saprai che...
+          </h2>
+          <p>
+            adottare un cucciolo a <span class="highlight">quattro mesi</span> è spesso il momento ideale:
+            è abbastanza grande per iniziare a capire le regole di casa, ma ancora piccolino
+            per costruire con te un legame fortissimo.
+          </p>
+          <p>
+            In questa fase il cucciolo è nel pieno del periodo di
+            <span class="highlight">socializzazione</span>: impara più in fretta, si abitua meglio ai bambini,
+            ad altri animali e ai rumori della vita quotidiana.
+          </p>
+        </div>
+        <p class="intro-quote">
+          «Adottare non è solo un gesto d’amore: è anche una scelta consapevole.  
+          Questo mini‑quiz ti aiuta a capire se sei pronto ad accogliere Muffin, Emy o Daisy nella tua famiglia.»
+        </p>
+      </div>
+    </section>
+
+    <!-- QUIZ -->
+    <section class="card quiz-card" aria-labelledby="quiz-title">
+      <div class="quiz-header">
+        <div>
+          <h2 id="quiz-title" class="quiz-header-title">Metti alla prova quanto hai capito</h2>
+          <p style="font-size:0.9rem;opacity:0.85;">Rispondi alle domande: alla fine scoprirai se sei pronto per l’adozione.</p>
+        </div>
+        <span class="badge">3 domande · 2 minuti</span>
+      </div>
+
+      <form class="questions" id="quiz-form">
+        <!-- Q1 -->
+        <article class="question" data-correct="b">
+          <h3>1. Adottare un cucciolo a quattro mesi significa soprattutto che...</h3>
+          <div class="options">
+            <label class="option">
+              <input type="radio" name="q1" value="a" />
+              <span>ha già imparato tutte le regole della casa.</span>
+            </label>
+            <label class="option">
+              <input type="radio" name="q1" value="b" />
+              <span>è nel momento migliore per socializzare e imparare.</span>
+            </label>
+            <label class="option">
+              <input type="radio" name="q1" value="c" />
+              <span>non ha più bisogno di vaccinazioni.</span>
+            </label>
+          </div>
+          <p class="explanation">
+            Tra i 2 e i 4 mesi i cuccioli sono nella fase di socializzazione: è il periodo perfetto
+            per insegnare regole e creare fiducia.
+          </p>
+        </article>
+
+        <!-- Q2 -->
+        <article class="question" data-correct="b">
+          <h3>2. Cosa fai appena il cucciolo entra ufficialmente in famiglia?</h3>
+          <div class="options">
+            <label class="option">
+              <input type="radio" name="q2" value="a" />
+              <span>lo porti subito a fare una lunghissima passeggiata.</span>
+            </label>
+            <label class="option">
+              <input type="radio" name="q2" value="b" />
+              <span>prenoti una visita dal veterinario per controllo e vaccinazioni.</span>
+            </label>
+            <label class="option">
+              <input type="radio" name="q2" value="c" />
+              <span>lo lasci solo qualche ora per “abituarlo alla solitudine”.</span>
+            </label>
+          </div>
+          <p class="explanation">
+            Un controllo veterinario iniziale è fondamentale per impostare calendario vaccini,
+            sverminazione e consigli su alimentazione e crescita.
+          </p>
+        </article>
+
+        <!-- Q3 -->
+        <article class="question" data-correct="b">
+          <h3>3. Quanto dovrebbe durare una singola sessione di gioco con un cucciolo?</h3>
+          <div class="options">
+            <label class="option">
+              <input type="radio" name="q3" value="a" />
+              <span>5–10 minuti, poi basta per tutta la giornata.</span>
+            </label>
+            <label class="option">
+              <input type="radio" name="q3" value="b" />
+              <span>15–30 minuti, più volte al giorno.</span>
+            </label>
+            <label class="option">
+              <input type="radio" name="q3" value="c" />
+              <span>almeno 1 ora di fila, altrimenti non si stanca.</span>
+            </label>
+          </div>
+          <p class="explanation">
+            Meglio giochi brevi ma frequenti: il cucciolo scarica energia senza esagerare
+            e resta concentrato e felice.
+          </p>
+        </article>
+
+        <button type="button" class="check-btn" id="check-btn">
+          Controlla le risposte
+          <span aria-hidden="true">🐾</span>
+        </button>
+
+        <p class="result" id="result-text" aria-live="polite"></p>
+      </form>
+    </section>
+
+    <!-- CTA finale -->
+    <section class="card cta-card">
+      <p id="cta-message">
+        Se hai seguito le storie e hai fatto il quiz, sei già a metà strada:  
+        il prossimo passo è scegliere con il cuore tra Muffin, Emy e Daisy.
+      </p>
+      <button class="adopt-btn" type="button">
+        Voglio conoscere i cuccioli
+        <span aria-hidden="true">❤️</span>
+      </button>
+    </section>
+
+   
+  </main>
+
+  <script>
+    const form = document.getElementById("quiz-form");
+    const checkBtn = document.getElementById("check-btn");
+    const resultText = document.getElementById("result-text");
+    const ctaMessage = document.getElementById("cta-message");
+
+    checkBtn.addEventListener("click", () => {
+      const questions = form.querySelectorAll(".question");
+      let total = questions.length;
+      let correct = 0;
+      let answered = 0;
+
+      questions.forEach(q => {
+        q.classList.remove("correct", "incorrect");
+        const name = q.querySelector("input[type=radio]").name;
+        const checked = form.querySelector(`input[name="${name}"]:checked`);
+        if (!checked) return;
+        answered++;
+
+        const right = q.dataset.correct;
+        if (checked.value === right) {
+          correct++;
+          q.classList.add("correct");
+        } else {
+          q.classList.add("incorrect");
+        }
+      });
+
+      if (answered < total) {
+        resultText.textContent = "Rispondi a tutte le domande per vedere il tuo risultato completo.";
+        return;
+      }
+
+      const score = Math.round((correct / total) * 100);
+      let msg;
+
+      if (score === 100) {
+        msg = "Perfetto! Sei super pronto per accogliere un cucciolo: lui ha bisogno proprio di una persona come te.";
+        ctaMessage.textContent = "Sei pronto: adesso scegli con calma se il tuo cuore dice Muffin, Emy o Daisy.";
+      } else if (score >= 67) {
+        msg = "Ottimo! Hai già una buona base: con qualche consiglio in più sarai un adottante ideale.";
+        ctaMessage.textContent = "Hai quasi tutto quello che serve: dai un’ultima occhiata alle storie e poi scegli il cucciolo che ti somiglia di più.";
+      } else {
+        msg = "Tranquillo, il quiz serve proprio a questo: ripassa le mie storie e fai domande prima di adottare.";
+        ctaMessage.textContent = "L’adozione è un grande passo: riguarda le storie, informati e poi torna qui quando ti sentirai più pronto.";
+      }
+
+      resultText.textContent = `Hai risposto correttamente a ${correct} su ${total} domande (${score}%). ${msg}`;
+    });
+  </script>
+</body>
+</html>
